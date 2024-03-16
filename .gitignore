@@ -163,3 +163,8 @@ cython_debug/
 .vs/
 
 datasets/
+
+example.ipynb
+model.pth
+data/
+
