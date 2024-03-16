@@ -169,4 +169,9 @@ datasets/
 example.ipynb
 model.pth
 data/
+
+# SSH keys
+*.pub
+*.bin
+
 example2.ipynb
