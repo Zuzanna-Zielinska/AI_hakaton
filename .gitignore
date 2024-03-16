@@ -168,3 +168,6 @@ example.ipynb
 model.pth
 data/
 
+# SSH keys
+*.pub
+*.bin
