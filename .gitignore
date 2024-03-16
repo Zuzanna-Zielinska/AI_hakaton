@@ -169,6 +169,7 @@ datasets/
 example.ipynb
 model.pth
 data/
+zad2/data/
 
 # SSH keys
 *.pub
