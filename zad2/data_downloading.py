@@ -27,7 +27,7 @@ def main_afinic():
 
     all_indices = get_all_indices()
     # get 2000 indexes for endpoint A
-    idxs_A = all_indices[:2000]
+    idxs_A = all_indices[:QUERY_MAX_ITEMS]
 
     while True:
         
@@ -35,7 +35,7 @@ def main_afinic():
             # reset endpoint A - base endpoint
             reset_endpoint(EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
 
-            # get 2000 values from endpoint A
+            # get QUERY_MAX_ITEMS values from endpoint A
             data_A = download_data(idxs_A, EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
         
         except Exception as err:
@@ -51,7 +51,7 @@ def main_afinic():
 
     train_data_A = data_A[:REQ_INDEXES]
 
-    new_idx = 2000
+    new_idx = QUERY_MAX_ITEMS
 
     # while we don't have all dataset - 20000 data:
     while new_idx < 20000:
@@ -98,13 +98,10 @@ def main_afinic():
 
     # save to .npz file with two fields: ids – all_indices, data – data_A
 
-    # data_to_save = {"ids": all_indices, "data": data_A}
-    if os.path.exists("./data"): os.mkdir("data")
-    np.savez(
-        "data/example_submission.npz",
-        ids=np.array(all_indices),
-        representations=data_A
-    )
+    np.savez("example_submission.npz", ids=np.array(all_indices), representations=data_A)
+    if not os.path.exists("./data"): os.mkdir("data")
+    np.savez("data/example_submission.npz", ids=np.array(all_indices), representations=data_A)
+    
 
 
 if __name__ == "__main__":
