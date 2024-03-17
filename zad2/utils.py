@@ -11,6 +11,7 @@ from taskdataset import TaskDataset
 SERVER_URL = "http://34.71.138.79:9090"
 TEAM_TOKEN = "n1JQ0vM903jaKbKg"
 QUERY_MAX_ITEMS = 2000
+TIMEOUT = 30.
 
 
 def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str):
@@ -22,7 +23,7 @@ def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str):
     endpoint = f"/sybil/{binary_or_affine}/{home_or_defense}"
     url = SERVER_URL + endpoint
     ids = ",".join(map(str, ids))
-    response = requests.get(url, params={"ids": ids}, headers={"token": TEAM_TOKEN})
+    response = requests.get(url, params={"ids": ids}, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT)
     if response.status_code == 200:
         print(f"[INFO] QUERY [{home_or_defense}/{binary_or_affine}] response OK")
         representations = response.json()["representations"]
@@ -42,7 +43,7 @@ def _sybil_submit(binary_or_affine: str, path_to_npz_file: str):
     url = SERVER_URL + endpoint
 
     with open(path_to_npz_file, "rb") as f:
-        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN}, timeout=10.)
+        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT)
 
     if response.status_code == 200:
         print("[INFO] Request OK")
@@ -57,7 +58,7 @@ def _sybil_reset(home_or_defense: str, binary_or_affine: str, ):
 
     endpoint = f"/sybil/{binary_or_affine}/reset/{home_or_defense}"
     url = SERVER_URL + endpoint
-    response = requests.post(url, headers={"token": TEAM_TOKEN}, timeout=10.)
+    response = requests.post(url, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT)
     if response.status_code == 200:
         print(f"[INFO] RESET [{home_or_defense}/{binary_or_affine}] request OK")
         print(response.json())

@@ -48,10 +48,10 @@ def main_afinic():
         
         print(f"[DEBUG] Current index range: [{new_idx}, {new_idx+INDEX_STEP}]")
         
-        # reset endpoint B - defender endpoint
-        reset_endpoint(EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
-        
         try:
+            # reset endpoint B - defender endpoint
+            reset_endpoint(EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
+
             # get REQ_INDEXES values from endpoint B
             train_data_B = download_data(idxs_B, EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
 
