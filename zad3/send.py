@@ -32,4 +32,4 @@ if __name__ == "__main__":
     file_name = args.name
     if os.path.exists(f"./{file_name}"):
         defense_submit(file_name)
-    else: print(f"[ERROR] File '{file_name}' does not ecist")
+    else: print(f"[ERROR] File '{file_name}' does not exist")
