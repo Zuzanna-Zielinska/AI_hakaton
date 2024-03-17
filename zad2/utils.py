@@ -42,7 +42,7 @@ def _sybil_submit(binary_or_affine: str, path_to_npz_file: str):
     url = SERVER_URL + endpoint
 
     with open(path_to_npz_file, "rb") as f:
-        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN})
+        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN}, timeout=10.)
 
     if response.status_code == 200:
         print("[INFO] Request OK")
@@ -57,7 +57,7 @@ def _sybil_reset(home_or_defense: str, binary_or_affine: str, ):
 
     endpoint = f"/sybil/{binary_or_affine}/reset/{home_or_defense}"
     url = SERVER_URL + endpoint
-    response = requests.post(url, headers={"token": TEAM_TOKEN})
+    response = requests.post(url, headers={"token": TEAM_TOKEN}, timeout=10.)
     if response.status_code == 200:
         print(f"[INFO] RESET [{home_or_defense}/{binary_or_affine}] request OK")
         print(response.json())
