@@ -15,6 +15,7 @@ def defense_submit(path_to_npz_file: str):
     endpoint = "/defense/submit"
     url = SERVER_URL + endpoint
     with open(path_to_npz_file, "rb") as f:
+        print(f"[INFO] QUERING with [{path_to_npz_file}]")
         response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN})
         if response.status_code == 200:
             print("[INFO] Request OK")
