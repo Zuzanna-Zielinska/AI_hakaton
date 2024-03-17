@@ -79,6 +79,8 @@ def main_afinic():
 
         # concatenate new data to the old one
         data_A = np.concatenate([data_A, A_test_new], axis=0)
+        
+        print(f"[INFO] Error: [{np.linalg.norm(train_data_B @ X - train_data_A):0.8f}]")
 
     # save data to the file
     # The submission should be an *.npz file with two fields: ids – an array of 20k
@@ -87,6 +89,7 @@ def main_afinic():
     # save to .npz file with two fields: ids – all_indices, data – data_A
 
     # data_to_save = {"ids": all_indices, "data": data_A}
+    if os.path.exists("./data"): os.mkdir("data")
     np.savez(
         "data/example_submission.npz",
         ids=np.array(all_indices),
