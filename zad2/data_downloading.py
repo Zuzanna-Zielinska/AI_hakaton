@@ -24,15 +24,25 @@ INDEX_STEP  = QUERY_MAX_ITEMS - REQ_INDEXES
 
 
 def main_afinic():
-    # reset endpoint A - base endpoint
-    reset_endpoint(EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
 
     all_indices = get_all_indices()
     # get 2000 indexes for endpoint A
     idxs_A = all_indices[:2000]
 
-    # get 2000 values from endpoint A
-    data_A = download_data(idxs_A, EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
+    while True:
+        
+        try:
+            # reset endpoint A - base endpoint
+            reset_endpoint(EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
+
+            # get 2000 values from endpoint A
+            data_A = download_data(idxs_A, EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
+        
+        except Exception as err:
+            print(f"[WARNING] ERROR occured, content: [{err}]")
+            continue
+        
+        break
 
     # get REQ_INDEXES indexes from endpoint A
     # REQ_INDEXES because it is affinic transformation matrix, so we need to have 384 rows of data
