@@ -2,6 +2,7 @@ import json
 import time
 import requests
 from typing import List
+from datetime import datetime
 
 import torch
 import numpy as np
@@ -15,7 +16,11 @@ TIMEOUT = 30.
 TIMEOUT_QUERY = 120.
 
 
-def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str):
+def get_timestamp() -> str:
+    return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+
+def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str, timeout: float=None):
     if home_or_defense not in ["home", "defense"] or binary_or_affine not in ["binary", "affine"]:
         raise Exception(f"Invalid endpoint: [{home_or_defense}:{binary_or_affine}]")
 
@@ -24,7 +29,8 @@ def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str):
     endpoint = f"/sybil/{binary_or_affine}/{home_or_defense}"
     url = SERVER_URL + endpoint
     ids = ",".join(map(str, ids))
-    response = requests.get(url, params={"ids": ids}, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT_QUERY)
+    if timeout is None: timeout = TIMEOUT_QUERY
+    response = requests.get(url, params={"ids": ids}, headers={"token": TEAM_TOKEN}, timeout=timeout)
     if response.status_code == 200:
         print(f"[INFO] QUERY [{home_or_defense}/{binary_or_affine}] response OK")
         representations = response.json()["representations"]
@@ -36,7 +42,7 @@ def _sybil_query(ids: List[int], home_or_defense: str, binary_or_affine: str):
 
 # Be careful. This can be done only 4 times an hour.
 # Make sure your file has proper content.
-def _sybil_submit(binary_or_affine: str, path_to_npz_file: str):
+def _sybil_submit(binary_or_affine: str, path_to_npz_file: str, timeout: float=None):
     if binary_or_affine not in ["binary", "affine"]:
         raise Exception(f"Invalid endpoint: [{binary_or_affine}]")
 
@@ -44,7 +50,7 @@ def _sybil_submit(binary_or_affine: str, path_to_npz_file: str):
     url = SERVER_URL + endpoint
 
     with open(path_to_npz_file, "rb") as f:
-        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT)
+        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN})
 
     if response.status_code == 200:
         print("[INFO] Request OK")
@@ -53,13 +59,14 @@ def _sybil_submit(binary_or_affine: str, path_to_npz_file: str):
         print(f"Request submit failed. Status code: {response.status_code}, content: {response.json()}")
 
 
-def _sybil_reset(home_or_defense: str, binary_or_affine: str, ):
+def _sybil_reset(home_or_defense: str, binary_or_affine: str, timeout: float=None):
     if home_or_defense not in ["home", "defense"] or binary_or_affine not in ["binary", "affine"]:
         raise Exception(f"Invalid endpoint: [{home_or_defense}:{binary_or_affine}]")
 
     endpoint = f"/sybil/{binary_or_affine}/reset/{home_or_defense}"
     url = SERVER_URL + endpoint
-    response = requests.post(url, headers={"token": TEAM_TOKEN}, timeout=TIMEOUT)
+    if timeout is None: timeout = TIMEOUT
+    response = requests.post(url, headers={"token": TEAM_TOKEN}, timeout=timeout)
     if response.status_code == 200:
         print(f"[INFO] RESET [{home_or_defense}/{binary_or_affine}] request OK")
         print(response.json())
@@ -75,7 +82,7 @@ def get_all_indices() -> list:
 def download_data(id_numbers: list, endpoint_type: str, endpoint_encoding: str) -> np.ndarray:
     if len(id_numbers) > QUERY_MAX_ITEMS: raise Exception(f"Numbe of requested indices exceeds limit of {QUERY_MAX_ITEMS} ({len(id_numbers)})")
     max_items = len(id_numbers)
-    step = 500
+    step = 810
     cnt = 0
     accu = []
     while cnt < max_items:
@@ -83,7 +90,7 @@ def download_data(id_numbers: list, endpoint_type: str, endpoint_encoding: str) 
         resp = _sybil_query(id_subset, endpoint_type, endpoint_encoding)
         cnt += step
         accu.extend(resp)
-        time.sleep(1)
+        time.sleep(0.5)
     accu = np.array(accu)
     print(f"[DEBUG] Downloaded data: [{accu.shape}]")
     return accu
@@ -91,4 +98,4 @@ def download_data(id_numbers: list, endpoint_type: str, endpoint_encoding: str) 
 
 def reset_endpoint(endpoint_type: str, endpoint_encoding: str) -> None:
     _sybil_reset(endpoint_type, endpoint_encoding)
-    time.sleep(1)
+    time.sleep(1.)
