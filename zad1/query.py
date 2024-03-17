@@ -72,7 +72,10 @@ def model_stealing_submit(path_to_onnx_file: str) -> None:
             print("[INFO] SUBMIT OK")
             print(response.json())
         else:
-            raise Exception(f"Model stealing submit failed. Code: {response.status_code}, content: {response.json()}")
+            try: 
+                raise Exception(f"Model stealing submit failed. Code: {response.status_code}, content: {response.json()}")
+            except Exception as err:
+                raise Exception(f"Cannot parse JSON, content: {err}")
 
 
 if __name__ == "__main__":
