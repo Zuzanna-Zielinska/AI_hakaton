@@ -20,7 +20,7 @@ from utils import get_all_indices, download_data, reset_endpoint, QUERY_MAX_ITEM
 
 REQ_INDEXES = 1000
 INDEX_STEP  = QUERY_MAX_ITEMS - REQ_INDEXES
-NUMBER_OF_TRIES = 7
+NUMBER_OF_TRIES = 5
 THRESHOLD = 0.5
 
 

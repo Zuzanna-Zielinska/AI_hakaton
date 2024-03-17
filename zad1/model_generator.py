@@ -21,6 +21,8 @@ if __name__ == "__main__":
     model = nn.Sequential(
                 nn.Flatten(),
                 nn.Linear(3 * 32 * 32, 512),
+                nn.Linear(512, 512),
+                nn.Linear(512, 512),
             )
 
     # input_tensor = torch.randn(1, 3, 32, 32)
