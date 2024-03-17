@@ -77,7 +77,7 @@ def model_stealing_submit(path_to_onnx_file: str) -> None:
 
 if __name__ == "__main__":
     
-    parser = argparse.ArgumentParser(description="Queries server", usage="Args priority: (1) [-f], (2) [-s], (3) [-r]")
+    parser = argparse.ArgumentParser(description="Queries server. Args priority: (1) [-f], (2) [-s], (3) [-r]")
     parser.add_argument("-f", "--filename", type=str, default=None, help="Path to image in PNG format")
     parser.add_argument("-s", "--submit", type=str, default=None,help="Path to file in ONNX format")
     parser.add_argument("-r", "--reset", type=bool, default=False, help="Queries server reset")
