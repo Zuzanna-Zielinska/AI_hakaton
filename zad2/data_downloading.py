@@ -16,7 +16,11 @@ class EndpointEncoding(Enum):
 
 
 from taskdataset import TaskDataset
-from utils import get_all_indices, download_data, reset_endpoint
+from utils import get_all_indices, download_data, reset_endpoint, QUERY_MAX_ITEMS
+
+
+REQ_INDEXES = 385
+INDEX_STEP  = QUERY_MAX_ITEMS - REQ_INDEXES
 
 
 def main_afinic():
@@ -30,26 +34,29 @@ def main_afinic():
     # get 2000 values from endpoint A
     data_A = download_data(idxs_A, EndpointType.BASE.value, EndpointEncoding.AFFINE.value)
 
-    # get 385 indexes from endpoint A
-    # 385 because it is affinic transformation matrix, so we need to have 384 rows of data
+    # get REQ_INDEXES indexes from endpoint A
+    # REQ_INDEXES because it is affinic transformation matrix, so we need to have 384 rows of data
     # and +1 for the bias
-    idxs_B = idxs_A[:385]
+    idxs_B = idxs_A[:REQ_INDEXES]
 
-    train_data_A = data_A[:385]
+    train_data_A = data_A[:REQ_INDEXES]
 
     new_idx = 2000
 
     # while we don't have all dataset - 20000 data:
     while new_idx < 20000:
+        
+        print(f"[DEBUG] Current index range: [{new_idx}, {new_idx+INDEX_STEP}]")
+        
         # reset endpoint B - defender endpoint
         reset_endpoint(EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
         
         try:
-            # get 385 values from endpoint B
+            # get REQ_INDEXES values from endpoint B
             train_data_B = download_data(idxs_B, EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
 
-            # get 1615 values from endpoint B
-            test_data_B = download_data(all_indices[new_idx:new_idx+1615], EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
+            # get INDEX_STEP values from endpoint B
+            test_data_B = download_data(all_indices[new_idx:new_idx+INDEX_STEP], EndpointType.DEFENDER.value, EndpointEncoding.AFFINE.value)
         
         except Exception as err:
             print(f"[WARNING] ERROR occured, content: [{err}]")
@@ -62,7 +69,7 @@ def main_afinic():
         X = np.linalg.lstsq(train_data_B, train_data_A, rcond=None)[0]
         
         # increase counter
-        new_idx += 1615
+        new_idx += INDEX_STEP
 
         # add row with values 1 for bias
         test_data_B = np.concatenate([test_data_B, np.ones((test_data_B.shape[0], 1))], axis=1)
