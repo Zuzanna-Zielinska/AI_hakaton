@@ -75,6 +75,4 @@ def download_data(id_numbers: list, endpoint_type: str, endpoint_encoding: str) 
 
 def reset_endpoint(endpoint_type: str, endpoint_encoding: str) -> None:
     _sybil_reset(endpoint_type, endpoint_encoding)
-
-
-
+    time.sleep(1)
